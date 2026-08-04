@@ -29,7 +29,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 40px 16px;
+            padding: 40px 12px;
             position: relative;
             overflow-x: hidden;
         }
@@ -62,6 +62,7 @@
                 16px 16px 0 var(--blood),
                 16px 16px 0 4px var(--void);
             position: relative;
+            overflow: hidden;
         }
 
         .main-box::after {
@@ -88,7 +89,7 @@
         }
 
         .header h1 {
-            font-size: clamp(2rem, 8vw, 4.5rem);
+            font-size: clamp(1.8rem, 7vw, 4.5rem);
             font-weight: 800;
             color: var(--bone);
             text-transform: uppercase;
@@ -181,6 +182,7 @@
             margin-bottom: 24px;
         }
 
+        /* FIX: flex-wrap + min-width 0 biar gak overflow */
         .input-group {
             display: flex;
             flex-wrap: wrap;
@@ -189,17 +191,18 @@
         }
 
         #nikInput {
-            flex: 1;
-            min-width: 200px;
+            flex: 1 1 auto;
+            min-width: 0; /* <-- INI PENTING, biar flex item bisa shrink */
+            width: 100%;
             padding: 20px 16px;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-family: inherit;
             font-weight: 700;
             background: #fff;
             border: none;
             outline: none;
             color: var(--void);
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             transition: background 0.1s;
         }
 
@@ -207,6 +210,7 @@
             color: #999;
             letter-spacing: 2px;
             font-weight: 400;
+            font-size: 1.1rem;
         }
 
         #nikInput:focus {
@@ -232,8 +236,9 @@
         }
 
         #trackBtn {
+            flex: 0 0 auto;
             padding: 20px 36px;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 800;
             font-family: inherit;
             background: var(--void);
@@ -245,6 +250,7 @@
             transition: all 0.08s;
             position: relative;
             overflow: hidden;
+            white-space: nowrap;
         }
 
         #trackBtn::before {
@@ -298,6 +304,8 @@
             font-weight: 700;
             text-transform: uppercase;
             color: var(--void);
+            flex-wrap: wrap;
+            gap: 4px;
         }
 
         .counter {
@@ -324,6 +332,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         #resultBox {
@@ -439,16 +449,51 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* RESPONSIVE */
+        /* RESPONSIVE: mobile stack */
         @media (max-width: 600px) {
             .main-box::after {
                 display: none;
             }
+            .content {
+                padding: 20px 16px;
+            }
+            .input-section {
+                padding: 16px;
+            }
             .input-group {
                 flex-direction: column;
             }
+            #nikInput {
+                width: 100%;
+                font-size: 1.2rem;
+                padding: 18px 14px;
+                letter-spacing: 1px;
+            }
+            #nikInput::placeholder {
+                font-size: 1rem;
+            }
             #trackBtn {
                 width: 100%;
+                padding: 18px;
+                font-size: 1.3rem;
+            }
+            .header {
+                padding: 24px 16px;
+            }
+            .sub-header {
+                justify-content: flex-start;
+            }
+            .result-header {
+                padding: 10px 12px;
+            }
+            #resultBox {
+                padding: 16px;
+                font-size: 0.9rem;
+            }
+            .footer {
+                padding: 12px;
+                justify-content: center;
+                text-align: center;
             }
         }
     </style>
@@ -512,7 +557,6 @@
             const copyBtn = document.getElementById('copyBtn');
             const charCount = document.getElementById('charCount');
 
-            // Utility: escape HTML to prevent XSS
             function escapeHtml(text) {
                 if (text === null || text === undefined) return '';
                 const div = document.createElement('div');
@@ -520,7 +564,6 @@
                 return div.innerHTML;
             }
 
-            // Utility: format result object to text
             function formatResult(obj) {
                 if (!obj || typeof obj !== 'object') return '⚠️ Format data tidak valid.';
                 const lines = [];
@@ -535,10 +578,8 @@
                 return lines.length > 0 ? lines.join('\n') : '⚠️ Data kosong.';
             }
 
-            // Real-time validation
             function validateInput() {
                 const raw = nikInput.value;
-                // Only allow digits
                 const cleaned = raw.replace(/\D/g, '');
                 if (raw !== cleaned) {
                     nikInput.value = cleaned;
@@ -560,7 +601,6 @@
                 setTimeout(validateInput, 0);
             });
 
-            // Copy to clipboard
             copyBtn.addEventListener('click', async function() {
                 try {
                     await navigator.clipboard.writeText(resultBox.textContent);
@@ -574,7 +614,6 @@
             });
 
             async function trackNIK(nik) {
-                // Validation
                 if (!nik || nik.length !== 16 || !/^\d{16}$/.test(nik)) {
                     resultBox.className = 'error';
                     resultTitle.textContent = '🚨 ERROR';
@@ -585,7 +624,6 @@
                     return;
                 }
 
-                // UI Loading State
                 resultBox.className = '';
                 resultTitle.textContent = '⏳ MEMPROSES...';
                 resultBox.innerHTML = '<span class="loading-text">>>> MELACAK DATABASE... <<<</span>';
@@ -593,7 +631,6 @@
                 trackBtn.querySelector('span').textContent = '...';
                 copyBtn.style.display = 'none';
 
-                // Fetch with timeout (10 seconds)
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 10000);
 
@@ -607,12 +644,10 @@
 
                     clearTimeout(timeoutId);
 
-                    // Check HTTP status first
                     if (!response.ok) {
                         throw new Error(`Server error: ${response.status} ${response.statusText}`);
                     }
 
-                    // Check content type
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
                         throw new Error('Response bukan JSON. Server mungkin error.');
@@ -661,7 +696,6 @@
                 }
             });
 
-            // URL param handler
             const urlParams = new URLSearchParams(window.location.search);
             const nikParam = urlParams.get('nik');
             if (nikParam) {
@@ -669,7 +703,6 @@
                 if (cleaned.length === 16) {
                     nikInput.value = cleaned;
                     validateInput();
-                    // Auto track with slight delay
                     setTimeout(() => trackNIK(cleaned), 500);
                 } else {
                     resultBox.className = 'error';
