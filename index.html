@@ -3,175 +3,651 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIK TRACKER - BRUTAL</title>
+    <title>⚡ NIK TRACKER v2.0 — BRUTAL EDITION</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+
+        :root {
+            --blood: #ff0033;
+            --void: #0a0a0a;
+            --bone: #e8e8e8;
+            --toxic: #ccff00;
+            --cyan: #00f0ff;
+            --warn: #ffaa00;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            background: #2a2a2a;
-            font-family: 'Courier New', monospace;
+            background: var(--void);
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            align-items: flex-start;
+            padding: 40px 16px;
+            position: relative;
+            overflow-x: hidden;
         }
-        .container {
-            max-width: 700px;
+
+        /* SCANLINE OVERLAY */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            background: #d9d9d9;
-            border: 8px solid #111;
-            box-shadow: 12px 12px 0 #ff0040;
-            padding: 30px 20px;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0,0,0,0.15),
+                rgba(0,0,0,0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
         }
-        h1 {
-            font-size: 4rem;
-            font-weight: 900;
-            color: #ff0040;
-            text-shadow: 6px 6px 0 #000;
-            letter-spacing: -2px;
-            word-break: break-word;
-            border-bottom: 6px solid #000;
-            padding-bottom: 10px;
+
+        .main-box {
+            width: 100%;
+            max-width: 800px;
+            background: var(--bone);
+            border: 8px solid var(--void);
+            box-shadow: 
+                16px 16px 0 var(--blood),
+                16px 16px 0 4px var(--void);
+            position: relative;
         }
-        .sub {
-            font-size: 1.2rem;
-            color: #111;
-            background: #f7e500;
-            display: inline-block;
+
+        .main-box::after {
+            content: 'BRUTAL_v2.0';
+            position: absolute;
+            top: -18px;
+            right: 20px;
+            background: var(--toxic);
+            color: var(--void);
+            font-size: 0.75rem;
+            font-weight: 800;
             padding: 4px 12px;
-            margin-top: -8px;
-            border: 3px solid #000;
+            border: 3px solid var(--void);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .box {
-            margin: 30px 0;
+
+        .header {
+            background: var(--void);
+            padding: 30px 24px;
+            border-bottom: 8px solid var(--blood);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 8vw, 4.5rem);
+            font-weight: 800;
+            color: var(--bone);
+            text-transform: uppercase;
+            letter-spacing: -3px;
+            line-height: 1;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* GLITCH EFFECT */
+        .glitch {
+            position: relative;
+        }
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--cyan);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-1 3s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--blood);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(20px, 9999px, 15px, 0); }
+            20% { clip: rect(60px, 9999px, 70px, 0); }
+            40% { clip: rect(20px, 9999px, 5px, 0); }
+            60% { clip: rect(80px, 9999px, 50px, 0); }
+            80% { clip: rect(10px, 9999px, 40px, 0); }
+            100% { clip: rect(50px, 9999px, 20px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            20% { clip: rect(80px, 9999px, 10px, 0); }
+            40% { clip: rect(30px, 9999px, 50px, 0); }
+            60% { clip: rect(60px, 9999px, 90px, 0); }
+            80% { clip: rect(20px, 9999px, 60px, 0); }
+            100% { clip: rect(90px, 9999px, 30px, 0); }
+        }
+
+        .sub-header {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
             flex-wrap: wrap;
-            gap: 10px;
-            border: 4px dashed #111;
-            padding: 20px;
-            background: #b3b3b3;
+            gap: 8px;
         }
-        #nikInput {
-            flex: 1;
-            padding: 18px 12px;
-            font-size: 1.6rem;
-            font-family: inherit;
-            background: #fff;
-            border: 5px solid #000;
-            color: #000;
-            outline: none;
-            font-weight: bold;
-        }
-        #nikInput:focus {
-            background: #f7e500;
-        }
-        #trackBtn {
-            padding: 18px 30px;
-            font-size: 2rem;
-            font-weight: 900;
-            background: #000;
-            color: #fff;
-            border: 5px solid #ff0040;
-            cursor: pointer;
-            transition: 0.1s;
+
+        .badge {
+            background: var(--toxic);
+            color: var(--void);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border: 3px solid var(--void);
             text-transform: uppercase;
         }
-        #trackBtn:hover {
-            background: #ff0040;
-            color: #000;
-            border-color: #000;
-            transform: scale(0.95);
+
+        .badge.warn {
+            background: var(--warn);
         }
-        .result-box {
-            margin-top: 20px;
-            padding: 20px;
-            background: #1a1a1a;
-            border: 6px solid #f7e500;
-            color: #0f0;
-            font-size: 1rem;
-            white-space: pre-wrap;
-            word-break: break-all;
-            min-height: 120px;
-            font-family: 'Courier New', monospace;
-            box-shadow: inset 0 0 30px rgba(255,0,64,0.3);
+
+        .content {
+            padding: 28px 24px;
         }
-        .footer {
-            margin-top: 30px;
-            font-size: 0.8rem;
-            color: #222;
+
+        .input-section {
+            border: 6px dashed var(--void);
+            padding: 24px;
+            background: repeating-linear-gradient(
+                45deg,
+                #d0d0d0,
+                #d0d0d0 10px,
+                #c5c5c5 10px,
+                #c5c5c5 20px
+            );
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            border: 6px solid var(--void);
+        }
+
+        #nikInput {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px 16px;
+            font-size: 1.5rem;
+            font-family: inherit;
+            font-weight: 700;
             background: #fff;
-            padding: 8px;
-            border: 3px solid #000;
+            border: none;
+            outline: none;
+            color: var(--void);
+            letter-spacing: 4px;
+            transition: background 0.1s;
+        }
+
+        #nikInput::placeholder {
+            color: #999;
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        #nikInput:focus {
+            background: var(--toxic);
+        }
+
+        #nikInput.error {
+            background: var(--blood);
+            color: #fff;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        #nikInput.valid {
+            background: #00ff88;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+
+        #trackBtn {
+            padding: 20px 36px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            font-family: inherit;
+            background: var(--void);
+            color: var(--bone);
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.08s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #trackBtn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--blood);
+            transition: left 0.2s;
+            z-index: 0;
+        }
+
+        #trackBtn:hover::before {
+            left: 0;
+        }
+
+        #trackBtn:hover {
+            color: #fff;
+            transform: translate(-4px, -4px);
+            box-shadow: 8px 8px 0 var(--void);
+        }
+
+        #trackBtn:active {
+            transform: translate(0, 0);
+            box-shadow: none;
+        }
+
+        #trackBtn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        #trackBtn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #trackBtn:disabled::before {
+            display: none;
+        }
+
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--void);
+        }
+
+        .counter {
+            background: var(--void);
+            color: var(--toxic);
+            padding: 2px 8px;
+            font-size: 0.85rem;
+        }
+
+        /* RESULT BOX */
+        .result-container {
+            border: 6px solid var(--void);
+            background: var(--void);
+            position: relative;
+        }
+
+        .result-header {
+            background: var(--blood);
+            color: #fff;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #resultBox {
+            padding: 24px;
+            min-height: 160px;
+            color: var(--toxic);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+            font-family: inherit;
+        }
+
+        #resultBox.idle {
+            color: #555;
             text-align: center;
-            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .loading {
-            color: #f7e500;
-            animation: blink 0.5s infinite;
+
+        #resultBox.error {
+            color: var(--blood);
+            background: #1a0000;
         }
+
+        #resultBox.success {
+            color: var(--cyan);
+            background: #001a1a;
+        }
+
+        .copy-btn {
+            background: var(--void);
+            color: var(--bone);
+            border: 3px solid var(--bone);
+            padding: 6px 14px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.1s;
+        }
+
+        .copy-btn:hover {
+            background: var(--bone);
+            color: var(--void);
+        }
+
+        .loading-text {
+            color: var(--warn);
+            animation: blink 0.3s steps(2) infinite;
+            font-weight: 800;
+        }
+
         @keyframes blink {
             0% { opacity: 1; }
             50% { opacity: 0; }
-            100% { opacity: 1; }
+        }
+
+        .footer {
+            margin-top: 24px;
+            border: 4px solid var(--void);
+            background: #fff;
+            padding: 16px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--void);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--toxic);
+            border: 2px solid var(--void);
+            display: inline-block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* MARQUEE */
+        .marquee-bar {
+            background: var(--blood);
+            color: #fff;
+            padding: 8px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            overflow: hidden;
+            white-space: nowrap;
+            border-bottom: 6px solid var(--void);
+        }
+
+        .marquee-bar span {
+            display: inline-block;
+            animation: marquee 10s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .main-box::after {
+                display: none;
+            }
+            .input-group {
+                flex-direction: column;
+            }
+            #trackBtn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ NIK TRACKER ⚡</h1>
-        <p class="sub">by @Zaam — brutal, no mercy</p>
-        <div class="box">
-            <input type="text" id="nikInput" placeholder="Masukkan NIK (16 digit)" maxlength="16" inputmode="numeric">
-            <button id="trackBtn">LACAK</button>
+    <div class="main-box">
+        <div class="marquee-bar">
+            <span>⚠️ SYSTEM BREACH DETECTED — NIK TRACKER v2.0 ONLINE — NO MERCY MODE ACTIVATED ⚠️</span>
         </div>
-        <div id="result" class="result-box">[ siap lacak ]</div>
-        <div class="footer">[ ENTITY PRIORITY ] — OxyX siap hancurkan batasan</div>
+
+        <div class="header">
+            <h1 class="glitch" data-text="⚡ NIK TRACKER">⚡ NIK TRACKER</h1>
+            <div class="sub-header">
+                <span class="badge">BRUTAL EDITION</span>
+                <span class="badge warn">by @Zaam</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="input-section">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="nikInput" 
+                        placeholder="MASUKKAN NIK" 
+                        maxlength="16" 
+                        inputmode="numeric"
+                        autocomplete="off"
+                    >
+                    <button id="trackBtn"><span>LACAK</span></button>
+                </div>
+                <div class="info-bar">
+                    <span>FORMAT: 16 DIGIT NUMERIK</span>
+                    <span>KARAKTER: <span class="counter" id="charCount">0/16</span></span>
+                </div>
+            </div>
+
+            <div class="result-container">
+                <div class="result-header">
+                    <span id="resultTitle">📟 OUTPUT TERMINAL</span>
+                    <button class="copy-btn" id="copyBtn" style="display:none;">📋 COPY</button>
+                </div>
+                <div id="resultBox" class="idle">[ SIAP MELACAK ]</div>
+            </div>
+
+            <div class="footer">
+                <span><span class="status-dot"></span> ENTITY PRIORITY ONLINE</span>
+                <span>OxyX — HANCURKAN BATASAN</span>
+            </div>
+        </div>
     </div>
 
     <script>
         (function() {
+            'use strict';
+
             const nikInput = document.getElementById('nikInput');
             const trackBtn = document.getElementById('trackBtn');
-            const resultDiv = document.getElementById('result');
+            const resultBox = document.getElementById('resultBox');
+            const resultTitle = document.getElementById('resultTitle');
+            const copyBtn = document.getElementById('copyBtn');
+            const charCount = document.getElementById('charCount');
+
+            // Utility: escape HTML to prevent XSS
+            function escapeHtml(text) {
+                if (text === null || text === undefined) return '';
+                const div = document.createElement('div');
+                div.textContent = String(text);
+                return div.innerHTML;
+            }
+
+            // Utility: format result object to text
+            function formatResult(obj) {
+                if (!obj || typeof obj !== 'object') return '⚠️ Format data tidak valid.';
+                const lines = [];
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        const val = obj[key];
+                        if (val !== null && val !== undefined && val !== '') {
+                            lines.push(`${escapeHtml(key.toUpperCase())}: ${escapeHtml(val)}`);
+                        }
+                    }
+                }
+                return lines.length > 0 ? lines.join('\n') : '⚠️ Data kosong.';
+            }
+
+            // Real-time validation
+            function validateInput() {
+                const raw = nikInput.value;
+                // Only allow digits
+                const cleaned = raw.replace(/\D/g, '');
+                if (raw !== cleaned) {
+                    nikInput.value = cleaned;
+                }
+
+                const len = cleaned.length;
+                charCount.textContent = `${len}/16`;
+
+                nikInput.classList.remove('error', 'valid');
+                if (len > 0 && len !== 16) {
+                    nikInput.classList.add('error');
+                } else if (len === 16) {
+                    nikInput.classList.add('valid');
+                }
+            }
+
+            nikInput.addEventListener('input', validateInput);
+            nikInput.addEventListener('paste', function(e) {
+                setTimeout(validateInput, 0);
+            });
+
+            // Copy to clipboard
+            copyBtn.addEventListener('click', async function() {
+                try {
+                    await navigator.clipboard.writeText(resultBox.textContent);
+                    const original = copyBtn.textContent;
+                    copyBtn.textContent = '✅ COPIED!';
+                    setTimeout(() => copyBtn.textContent = original, 1500);
+                } catch (err) {
+                    copyBtn.textContent = '❌ GAGAL';
+                    setTimeout(() => copyBtn.textContent = '📋 COPY', 1500);
+                }
+            });
 
             async function trackNIK(nik) {
+                // Validation
                 if (!nik || nik.length !== 16 || !/^\d{16}$/.test(nik)) {
-                    resultDiv.innerHTML = '❌ NIK harus 16 digit angka!';
+                    resultBox.className = 'error';
+                    resultTitle.textContent = '🚨 ERROR';
+                    resultBox.textContent = '❌ NIK harus 16 digit angka!';
+                    copyBtn.style.display = 'none';
+                    nikInput.classList.add('error');
+                    setTimeout(() => nikInput.classList.remove('error'), 500);
                     return;
                 }
 
-                resultDiv.innerHTML = '<span class="loading">⏳ MELACAK ...</span>';
+                // UI Loading State
+                resultBox.className = '';
+                resultTitle.textContent = '⏳ MEMPROSES...';
+                resultBox.innerHTML = '<span class="loading-text">>>> MELACAK DATABASE... <<<</span>';
                 trackBtn.disabled = true;
+                trackBtn.querySelector('span').textContent = '...';
+                copyBtn.style.display = 'none';
+
+                // Fetch with timeout (10 seconds)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
 
                 try {
                     const response = await fetch('/api/track', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ nik: nik })
+                        body: JSON.stringify({ nik: nik }),
+                        signal: controller.signal
                     });
+
+                    clearTimeout(timeoutId);
+
+                    // Check HTTP status first
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    }
+
+                    // Check content type
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Response bukan JSON. Server mungkin error.');
+                    }
 
                     const data = await response.json();
 
-                    if (data.status === 'success') {
-                        const r = data.result;
-                        let html = '✅ DATA DITEMUKAN:\n\n';
-                        for (const key in r) {
-                            if (r[key] !== null && r[key] !== undefined && r[key] !== '') {
-                                html += `${key.toUpperCase()}: ${r[key]}\n`;
-                            }
-                        }
-                        resultDiv.innerHTML = html || '⚠️ Data kosong.';
+                    if (data && data.status === 'success') {
+                        resultBox.className = 'success';
+                        resultTitle.textContent = '✅ DATA DITEMUKAN';
+                        resultBox.textContent = formatResult(data.result);
+                        copyBtn.style.display = 'inline-block';
                     } else {
-                        resultDiv.innerHTML = `❌ ${data.message || 'Gagal mengambil data.'}`;
+                        resultBox.className = 'error';
+                        resultTitle.textContent = '⚠️ GAGAL';
+                        resultBox.textContent = `❌ ${escapeHtml(data?.message || 'Gagal mengambil data dari server.')}`;
+                        copyBtn.style.display = 'none';
                     }
+
                 } catch (err) {
-                    resultDiv.innerHTML = `🚨 ERROR: ${err.message || 'Network error'}`;
+                    resultBox.className = 'error';
+                    resultTitle.textContent = '🚨 CRITICAL ERROR';
+                    
+                    let msg = err.message || 'Terjadi kesalahan.';
+                    if (err.name === 'AbortError') {
+                        msg = '⏱️ TIMEOUT: Server tidak merespons dalam 10 detik.';
+                    } else if (err.message.includes('Failed to fetch')) {
+                        msg = '🔌 NETWORK ERROR: Cek koneksi atau endpoint API.\n\nTip: File HTML ini harus dijalankan melalui server (bukan langsung dibuka).';
+                    }
+                    
+                    resultBox.textContent = `🚨 ${escapeHtml(msg)}`;
+                    copyBtn.style.display = 'none';
                 } finally {
                     trackBtn.disabled = false;
+                    trackBtn.querySelector('span').textContent = 'LACAK';
                 }
             }
 
@@ -185,12 +661,20 @@
                 }
             });
 
-            // Contoh otomatis dari URL param ?nik=123...
+            // URL param handler
             const urlParams = new URLSearchParams(window.location.search);
             const nikParam = urlParams.get('nik');
-            if (nikParam && nikParam.length === 16 && /^\d{16}$/.test(nikParam)) {
-                nikInput.value = nikParam;
-                trackNIK(nikParam);
+            if (nikParam) {
+                const cleaned = nikParam.replace(/\D/g, '');
+                if (cleaned.length === 16) {
+                    nikInput.value = cleaned;
+                    validateInput();
+                    // Auto track with slight delay
+                    setTimeout(() => trackNIK(cleaned), 500);
+                } else {
+                    resultBox.className = 'error';
+                    resultBox.textContent = `⚠️ Parameter URL tidak valid: ${escapeHtml(nikParam)}`;
+                }
             }
         })();
     </script>
